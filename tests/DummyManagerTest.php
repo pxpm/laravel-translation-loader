@@ -32,7 +32,11 @@ class DummyManagerTest extends TestCase
         $this->assertEquals('en value', trans('file.key'));
     }
 
-    /** @test */
+    /** @test 
+     * @group fail 
+     * 
+     */
+
     public function it_can_translate_using_dummy_manager_using_db()
     {
         $this->createLanguageLine('file', 'key', ['en' => 'en value from db']);

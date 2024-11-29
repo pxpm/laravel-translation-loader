@@ -9,7 +9,7 @@ use Spatie\TranslationLoader\TranslationServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
-    /** @var \Spatie\TranslationLoader\LanguageLine */
+    /** @var LanguageLine */
     protected $languageLine;
 
     public function setUp(): void
@@ -18,9 +18,13 @@ abstract class TestCase extends Orchestra
 
         Artisan::call('migrate');
 
-        $LanguageLinesTable = require(__DIR__.'/../database/migrations/create_language_lines_table.php.stub');
+        $LanguageLinesTable = require __DIR__.'/../database/migrations/0000_00_00_000000_create_language_lines_table.php.stub';
 
         $LanguageLinesTable->up();
+
+        $languageLinesAlterTable = require __DIR__.'/../database/migrations/9999_99_99_000001_alter_language_lines_table.php.stub';
+
+        $languageLinesAlterTable->up();
 
         $this->languageLine = $this->createLanguageLine('group', 'key', ['en' => 'english', 'nl' => 'nederlands']);
     }
@@ -34,6 +38,7 @@ abstract class TestCase extends Orchestra
     {
         return [
             TranslationServiceProvider::class,
+            TestServiceProvider::class,
         ];
     }
 
@@ -46,9 +51,9 @@ abstract class TestCase extends Orchestra
 
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
-            'driver' => 'sqlite',
+            'driver'   => 'sqlite',
             'database' => ':memory:',
-            'prefix' => '',
+            'prefix'   => '',
         ]);
     }
 
@@ -60,5 +65,10 @@ abstract class TestCase extends Orchestra
     protected function createLanguageLine(string $group, string $key, array $text): LanguageLine
     {
         return LanguageLine::create(compact('group', 'key', 'text'));
+    }
+
+    protected function createNamespacedLanguageLine(string $namespace, string $group, string $key, array $text): LanguageLine
+    {
+        return LanguageLine::create(compact('namespace', 'group', 'key', 'text'));
     }
 }
